@@ -1,118 +1,131 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { TextInput } from 'react-native-paper';
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+const CalculatorApp: React.FC = () => {
+  const [input, setInput] = useState<string>('');
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+  const handlePress = (value: string) => {
+    setInput(input + value);
+  };
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+  const handleCalculate = () => {
+    try {
+      setInput(eval(input).toString()); // Be cautious using eval in production
+    } catch (e) {
+      setInput('Error');
+    }
+  };
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
-
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  const handleClear = () => {
+    setInput('');
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
+    <View style={styles.container}>
+      <TextInput
+        mode="outlined"
+        value={input}
+        style={styles.input}
+        editable={false}
       />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
+      <View style={styles.buttons}>
+        <View style={styles.row}>
+          {['7', '8', '9', '/'].map((value) => (
+            <TouchableOpacity key={value} style={styles.button} onPress={() => handlePress(value)}>
+              <Text style={styles.buttonText}>{value}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
-      </ScrollView>
-    </SafeAreaView>
+        <View style={styles.row}>
+          {['4', '5', '6', '*'].map((value) => (
+            <TouchableOpacity key={value} style={styles.button} onPress={() => handlePress(value)}>
+              <Text style={styles.buttonText}>{value}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+        <View style={styles.row}>
+          {['1', '2', '3', '-'].map((value) => (
+            <TouchableOpacity key={value} style={styles.button} onPress={() => handlePress(value)}>
+              <Text style={styles.buttonText}>{value}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+        <View style={styles.row}>
+          {['0', '.', '=', '+'].map((value) => (
+            <TouchableOpacity
+              key={value}
+              style={[styles.button, value === '=' ? styles.equalButton : null]}
+              onPress={() => (value === '=' ? handleCalculate() : handlePress(value))}
+            >
+              <Text style={styles.buttonText}>{value}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+        <TouchableOpacity style={styles.clearButton} onPress={handleClear}>
+          <Text style={styles.clearButtonText}>Clear</Text>
+        </TouchableOpacity>
+      </View>
+      <Text style={styles.footer}>Calc by Raj</Text>
+    </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  container: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: '#f5f5f5',
+    padding: 20,
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  input: {
+    fontSize: 40,
+    textAlign: 'right',
+    marginBottom: 20,
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
+  buttons: {
+    flex: 1,
+    justifyContent: 'space-between',
   },
-  highlight: {
-    fontWeight: '700',
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  button: {
+    width: '22%',
+    padding: 20,
+    backgroundColor: '#fff',
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  buttonText: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  equalButton: {
+    backgroundColor: '#4CAF50',
+  },
+  clearButton: {
+    backgroundColor: '#f44336',
+    padding: 20,
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  clearButtonText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+  footer: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#555',
+    marginTop: 20,
   },
 });
 
-export default App;
+export default CalculatorApp;
